@@ -2,8 +2,10 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
@@ -12,7 +14,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const uri = "mongodb+srv://lioarce01:lionelarce99@farmsimulator.uxe5n.mongodb.net/api_rest_go?retryWrites=true&w=majority"
 
 var mongoClient *mongo.Client
 
@@ -40,11 +41,16 @@ func main() {
 }
 
 func connect_to_mongodb() error {
+	uri := os.Getenv("MONGO_URI")
+
+	if uri == "" {
+		return fmt.Errorf("MONGO_URI not found in environment variables")
+	}
+
 	serverAPI := options.ServerAPI(options.ServerAPIVersion1)
 	opts := options.Client().ApplyURI(uri).SetServerAPIOptions(serverAPI)
 
 	client, err := mongo.Connect(context.TODO(), opts)
-
 	if err != nil{
 		panic(err)
 	}
